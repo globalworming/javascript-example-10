@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Errors 3</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.6.0/styles/default.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.6.0/highlight.min.js"></script>
+</head>
+<body onload=" RunTest.test3()">
+<h1>Error Handling</h1>
+The <i>try-catch</i> block extended with a <i>finally</i> block. The purpose of that finally is to run regardless of successful or erroneous execution, so you can use it for e.g. cleaning up.
+<pre>
+<code class="language-javascript">let accountId
+try {
+    accountId = startCreatingAccount()
+    confirmUserInfo(accountId)
+    finishCreation(accountId)
+} catch (e) {
+    console.error(e)
+    throw new ServerError(e)
+} finally {
+    cleanupAccount(accountId)
+}</code>
+</pre>
+
+<script src="test.js"></script>
+
+<pre class="jserror"></pre>
+<pre class="error"></pre>
+<div id="next" hidden="hidden">
+    <a href="./3.html">next</a>
+</div>
+
+<!-- fancy code highlighting -->
+<script>hljs.highlightAll();</script>
+</body>
+</html>

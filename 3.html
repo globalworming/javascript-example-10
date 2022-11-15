@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Errors 3</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.6.0/styles/default.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.6.0/highlight.min.js"></script>
+</head>
+<body onload="runCatchingAsync(task); RunTest.test2()">
+<h1>Async Error Handling</h1>
+When working with Promises, you can't catch what's thrown in an async block
+<pre>
+<code class="language-javascript">try {
+    new Promise((resolve) => {
+        throw new Error("thrown in promise resolution")
+    })
+} catch (e) {
+    // is not catching
+    console.log("caught", e)
+}</code>
+</pre>
+You have to chain catch and finally methods
+<pre>
+<code class="language-javascript">new Promise((resolve, reject) => {
+    reject(new Error("promise not resolved"))
+    // functionally the same as
+    // throw new Error("thrown in promise resolution")
+}).catch(e => {
+    console.error("caught", e.message)
+}).finally(() => console.log("cleanup"))
+// -> caught promise not resolved
+// -> cleanup
+</code>
+</pre>
+Thrown errors will be caught in the nearest <i>catch</i> so you can rethrow errors here as well. Also chaining multiple <i>finally</i> blocks is possible.
+<pre>
+<code class="language-javascript">new Promise(() => {
+    throw new Error("thrown in promise resolution")
+}).catch(e => {
+    console.error("caught", e.message)
+    throw new Error("rethrow")
+}).finally(
+  () => console.log("cleanup something")
+).finally(
+  () => console.log("cleanup something else")
+).catch(e => {
+    console.error("caught", e.message)
+})
+// -> caught thrown in promise resolution
+// -> cleanup something
+// -> cleanup something else
+// -> caught rethrow</code>
+</pre>
+
+<h3>Your Task:</h3>
+<span>edit the script block of this file to rethrow the Error as ServerError</span><br>
+<h4>caught: <span id="exception"></span></h4>
+<span id="message" class="error"></span>
+
+<script type="application/javascript">
+    class ServerError extends Error {
+        constructor(message) {
+            super(message);
+            this.name = "ServerError"
+        }
+    }
+    class DatabaseError extends Error {
+        constructor(message) {
+            super(message);
+            this.name = "DatabaseError"
+        }
+    }
+
+    const task = () => {
+        return new Promise(() => {
+            throw new DatabaseError()
+        }).catch(e => {
+            // FIXME rethrow as Server error
+        })
+    };
+</script>
+<script src="test.js"></script>
+
+<pre class="jserror"></pre>
+<pre class="error"></pre>
+<div id="next" hidden="hidden">
+    <a href="./4.html">next</a>
+</div>
+
+<!-- fancy code highlighting -->
+<script>hljs.highlightAll();</script>
+</body>
+</html>

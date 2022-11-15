@@ -1,45 +1,53 @@
-function addSuccess(s) {
-    const item = document.createElement("li")
-    item.textContent = "✅ " + s
-    document.getElementById("tests").append(item)
-}
-
 const RunTest = {
     test1() {
-
-        try {
-            const switchButton = () => document.querySelectorAll("#app button")[0];
-
-            (function appInitialStateShouldShowButtonText(t) {
-                const buttonText = switchButton().textContent
-                if (buttonText !== t) {
-                    throw new Error("expecting button to say 'heroes'")
+        setTimeout(() => {
+            try {
+                if (!document.getElementById("exception").textContent.startsWith("Error")) {
+                    document.getElementsByClassName("error")[0].textContent = "expected error to be thrown"
+                    return
                 }
-                addSuccess("appInitialStateShouldShowButtonText")
-            })("heroes");
+                document.getElementById("next").hidden = false
+            } catch (e) {
+                document.getElementsByClassName("error")[0].textContent = e.message + "\n\n" + e.stack
+                throw e
+            }
+        }, 1000)
 
-
-            (function appInitialStateShouldShowTwoEntries() {
-                let numberOfListItems = document.querySelectorAll("#app li").length;
-                if (numberOfListItems !== 2) {
-                    throw new Error("expecting two list entries but was " + numberOfListItems)
+    },
+    test2() {
+        setTimeout(() => {
+            try {
+                let error = document.getElementById("exception").textContent;
+                if (!error.startsWith("ServerError")) {
+                    document.getElementsByClassName("error")[0].textContent = "expected ServerError to be thrown but got " + (error || "nothing")
+                    return
                 }
-                addSuccess("appInitialStateShouldShowTwoEntries")
+                document.getElementById("next").hidden = false
+            } catch (e) {
+                document.getElementsByClassName("error")[0].textContent = e.message + "\n\n" + e.stack
+                throw e
+            }
+        }, 1000)
 
-            })();
+    },
+    test3() {
+        setTimeout(() => {
+            document.getElementById("next").hidden = false
+        }, 2000)
+    },
+}
 
-            (function removingAnEntryDecreasesListSize() {
-                let initialNumberOfListItems = document.querySelectorAll("#app li").length;
-                document.querySelectorAll("#app li button")[0].click()
-                let newNumberOfListItems = document.querySelectorAll("#app li").length;
-                if (newNumberOfListItems !== initialNumberOfListItems - 1) {
-                    throw new Error("expecting one less entries")
-                }
-                addSuccess("removingAnEntryDecreasesListSize")
-            })();
-        } catch (e) {
-            document.getElementsByClassName("error")[0].textContent = e.message + "\n\n" + e.stack
-            throw e
-        }
+const runCatching = (f) => {
+    try {
+        f()
+    } catch (e) {
+        document.getElementById("exception").textContent = e.name
     }
 }
+
+const runCatchingAsync = (f) => {
+        f().catch(e=> {
+            document.getElementById("exception").textContent = e.name
+        })
+}
+

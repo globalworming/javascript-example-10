@@ -2,68 +2,83 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Async</title>
+    <title>Errors 2</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.6.0/styles/default.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.6.0/highlight.min.js"></script>
 </head>
-<body>
-<h1>DOM</h1>
-You can use the DOM API to interact with your app and there are many test frameworks that do that. Using the Selenium Webdriver to click on an element will most likely result in a click event being dispatched.
+<body onload="runCatching(task); RunTest.test2()">
+<h1>Error Handling</h1>
+It is often a good idea to create specific Errors for your domain. Some frameworks might also come with their own model already.
 <pre>
-<code class="language-javascript">element.dispatchEvent(new Event('click'));
-// or just
-element.click()
+<code class="language-javascript">class ServerError extends Error {}
+class ClientError extends Error {}
+
+const handle = (e) => {
+    if (e instanceof ServerError) {
+        console.error(e)
+        return "something went wrong"
+    }
+    if (e instanceof ClientError) {
+        console.warn(e)
+        return "you did something wrong: " + e.message
+    }
+    // not sure how to handle, throw again
+    console.error(e)
+    throw e
+}
+
+const get = (id) =>  {
+    try {
+        if (id <= 0) { throw new ClientError("unexpected id") }
+        return "success"
+    } catch (e) {
+        return handle(e)
+    }
+}
+
+console.log(get(1))
+// -> success
+console.log(get(-1))
+// -> you did something wrong: unexpected id
 </code>
 </pre>
-so what you can do is using this DOM API to write tests scripts for you browser based applications
 
-<pre>
-<code class="language-javascript">const switchButton = () => document.querySelectorAll("#app button")[0];
+<h3>Your Task:</h3>
+<span>edit the script block of this file to throw an Error</span><br>
+<h4>caught: <span id="exception"></span></h4>
+<span id="message" class="error"></span>
 
-(function appInitialStateShouldShowButtonText(t) {
-    const buttonText = switchButton().textContent
-    if (buttonText !== t) {
-        throw new Error("expecting button to say 'heroes'")
+<script type="application/javascript">
+    class ServerError extends Error {
+        constructor(message) {
+            super(message);
+            this.name = "ServerError"
+        }
     }
-})("heroes");
-
-(function appInitialStateShouldShowTwoEntries() {
-    let numberOfListItems = document.querySelectorAll("#app li").length;
-    if (numberOfListItems !== 2) {
-        throw new Error("expecting two list entries but was " + numberOfListItems)
+    class DatabaseError extends Error {
+        constructor(message) {
+            super(message);
+            this.name = "DatabaseError"
+        }
     }
-})();
 
-(function removingAnEntryDecreasesListSize() {
-    let initialNumberOfListItems = document.querySelectorAll("#app li").length;
-    document.querySelectorAll("#app li button")[0].click()
-    let newNumberOfListItems = document.querySelectorAll("#app li").length;
-    if (newNumberOfListItems !== initialNumberOfListItems - 1) {
-        throw new Error("expecting one less entries")
-    }
-})();
-</code>
-</pre>
-
-<button onclick="RunTest.test1()">▶ run tests</button>
-<ul id="tests"></ul>
-<br />
-<br />
-<div id="app"></div>
-<script src="render.js"></script>
-<pre class="jserror"></pre>
-<pre class="error"></pre>
-
+    const task = () => {
+        try {
+            throw new DatabaseError()
+        } catch (e) {
+            // FIXME on database errors we should throw a generic server error
+            console.log(e)
+        }
+    };
+</script>
 <script src="test.js"></script>
 
-<h3>Your Task: write another test</h3>
-e.g. that clicking the button results in the text switching to 'villains' then click
-<button onclick="document.getElementById('displayOnSuccess').hidden = false">done</button>
-
-<div id="displayOnSuccess" hidden="hidden">
-    <a href="./fixme">FIXME next classroom</a>
+<pre class="jserror"></pre>
+<pre class="error"></pre>
+<div id="next" hidden="hidden">
+    <a href="./2.html">next</a>
 </div>
 
 <!-- fancy code highlighting -->
